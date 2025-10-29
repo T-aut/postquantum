@@ -136,15 +136,6 @@ class GGHCryptosystem:
     def encrypt(self, message):
         """
         Encrypt a message vector using HNF-based encryption.
-        
-        The message is encoded as a short noise vector r.
-        Encryption: c = r mod H (reduce mod diagonal of H)
-        
-        Args:
-            message: Integer vector of length n (encoded as noise)
-            
-        Returns:
-            Ciphertext vector
         """
         if self.public_key is None:
             raise ValueError("Keys must be generated first")
@@ -158,49 +149,12 @@ class GGHCryptosystem:
         
         return ciphertext
     
-    def babai_closest_vertex(self, target, basis):
-        """
-        Babai's nearest plane algorithm to find the closest lattice point.
-        
-        Args:
-            target: The target vector (ciphertext)
-            basis: The basis to use (private key)
-            
-        Returns:
-            Closest lattice point coefficients
-        """
-        # Compute coefficients in the basis
-        B_inv = inv(basis)
-        coeffs = B_inv @ target  # Changed this line    
-            
-        # Round to nearest integers
-        rounded_coeffs = np.round(coeffs)
-        
-        return rounded_coeffs.astype(int)
-    
     def decrypt(self, ciphertext):
         """
         Decrypt a ciphertext using the private key.
-        
-        Decryption: 
-        1. Find v = closest lattice point to c using good basis B
-        2. Recover r = c - v
-        
-        Args:
-            ciphertext: The encrypted message
-            
-        Returns:
-            Decrypted message vector (noise vector r)
         """
         if self.private_key is None:
             raise ValueError("Private key must be generated first")
-        
-        # # Find closest lattice point v using Babai with good basis
-        # v = self.babai_closest_vertex(ciphertext, self.private_key)
-        
-        # # Recover noise vector: r = c - v
-        # r = ciphertext - v
-        # r = np.round(r).astype(int)
 
         decrypted = ""
         aux = ciphertext @ inv(self.private_key)
